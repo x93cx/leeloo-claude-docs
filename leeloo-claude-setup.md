@@ -14,25 +14,53 @@ MCP server: `https://app.leeloo.ai/mcp`
 
 ---
 
-## First: check where you are running
+## Which route
 
-This decides which of the two routes below applies. Getting it wrong wastes the
-user's time and can leave a half-configured server that never authenticates.
+There are two ways in. **Route B, the connector, is the default — recommend it
+first to everyone.** It is the only one that works on every surface, and it needs
+no terminal.
 
-| Surface | Route |
-|---|---|
-| Claude Code on the user's own machine — CLI, the Code tab of the desktop app, or the IDE extension | **Route A**, the command line |
-| Cowork | **Route B**, connector |
-| Claude Code on the web, cloud sessions, routines | **Route B**, connector |
-| The chat at claude.ai | **Route B**, connector |
+| Surface | Connector (B) | Command line (A) |
+|---|---|---|
+| Claude Code on the user's own machine (CLI, Code tab, IDE extension) | works | works |
+| Cowork | works | — |
+| Claude Code on the web, cloud sessions, routines | works | — |
+| The chat at claude.ai | works | — |
 
-Route A needs two things that only exist locally: a shell, and a browser on the
-same machine that an OAuth callback to `localhost` can reach. Everywhere else,
-use Route B and say so plainly instead of attempting commands that cannot work.
+Reach for Route A only when the user is in local Claude Code and specifically
+prefers the terminal. Anywhere else, the command line cannot work — it needs a
+local shell and a browser on the same machine that an OAuth callback to
+`localhost` can reach — so use the connector and say so plainly instead of
+attempting commands that will fail.
 
 ---
 
-## Route A — local Claude Code
+## Route B — connector (default, works everywhere)
+
+No terminal, no TTY, no localhost callback, and **no domain allowlisting**:
+connector traffic travels through Anthropic's servers rather than the session's
+network. This is the route to give almost everyone.
+
+These steps are the user's to perform — you cannot click through Claude's
+settings for them. Walk them through it; don't loop on attempts.
+
+1. In Claude, open **Customize → Connectors** (left panel in the app; **Settings
+   → Connectors** on claude.ai).
+2. **Add custom connector**, paste the URL `https://app.leeloo.ai/mcp`, and save.
+3. Click **Connect** and sign in to Leeloo in the window that opens.
+4. Enable the connector, then start a **new** session — the current one keeps the
+   tool set it started with.
+
+### Why unblocking a domain is not the fix here
+
+Allowlisting a support domain only lets you read instructions. It does not make
+`claude mcp add` work in a running cloud session, and it does not help an OAuth
+callback reach the user's browser. If the user asks whether to unblock something,
+tell them the connector needs no allowlist at all.
+
+---
+
+## Route A — command line (local Claude Code only)
 
 ### 1. Register the server
 
@@ -121,7 +149,7 @@ decide not to enter a password on a page an agent opened for them. That decision
 is theirs; do not argue them out of it, and do not characterise their caution as
 a misunderstanding.
 
-If they would rather not, Route B below connects Leeloo without this flow at all.
+If they would rather not, the connector route above connects Leeloo without this flow at all.
 
 Never type someone's credentials yourself, and never offer to.
 
@@ -140,31 +168,6 @@ Verify with:
 ```
 claude mcp get leeloo
 ```
-
----
-
-## Route B — connector
-
-Works on every surface, including Cowork, cloud sessions and claude.ai. It needs
-no terminal, no TTY, no localhost callback, and **no domain allowlisting**:
-connector traffic travels through Anthropic's servers rather than the session's
-network.
-
-These four steps are the user's to perform — you cannot click through claude.ai
-settings for them. Say so plainly rather than looping on attempts.
-
-1. Open connector settings and add a custom connector with the URL
-   `https://app.leeloo.ai/mcp`.
-2. Sign in to Leeloo when the connector asks for authorization.
-3. Enable the connector for the surface they are using.
-4. Start a **new** session — the current one keeps the tool set it started with.
-
-### Why unblocking a domain is not the fix here
-
-Allowlisting a support domain only lets you read instructions. It does not make
-`claude mcp add` work in a running cloud session, and it does not help the OAuth
-callback reach the user's browser. If the user asks whether to unblock something,
-tell them Route B needs no allowlist at all.
 
 ---
 

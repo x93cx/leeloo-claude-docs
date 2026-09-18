@@ -335,15 +335,9 @@ ol.steplist code,p code,.note code{
 /* Підключення йде тільки через промт. Адреса MCP-сервера живе на сторінці-інструкції
    для Claude (SETUP_URL) — клієнт її ніколи не вводить руками, тож тут вона не потрібна
    і не може розійтися з реальною. */
+/* Довідкова сторінка з розбором помилок і CLI-варіантом. Основний шлях —
+   конектор через Customize → Connectors, він у кроці 2 і працює скрізь. */
 const SETUP_URL = "https://support.leeloo.ai/leeloo-claude-setup.html";
-/* Уся процедура живе на сторінці — її можна правити централізовано.
-   У промті лишається тільки те, чого сторінка не донесе, якщо вона
-   недоступна: куди подітись далі. Egress-політика керованих середовищ
-   ріже support.leeloo.ai, і без цього рядка агент лишається ні з чим. */
-const GOAL_PROMPT =
-  "/goal Read " + SETUP_URL + " and connect the Leeloo MCP server. " +
-  "If that page is blocked, say so instead of retrying, and tell me to add " +
-  "https://app.leeloo.ai/mcp as a connector in my settings.";
 /* Скіли клієнт ставить сам через Customize → Skills. Формат — ZIP, усередині тека
    скіла з файлом SKILL.md. Агент цього зробити не може: це UI самого Claude. */
 const SKILL_MARKETING = "https://support.leeloo.ai/skills/marketing-foundation-builder.zip";
@@ -372,20 +366,21 @@ ua:{
     ]},
     {t:"note",k:"info",nt:"Корпоративний акаунт",v:"Якщо ви входите під акаунтом компанії (Team або Enterprise), частина налаштувань може бути закрита адміністратором. Це стане важливим на наступному кроці."}
    ]},
-   {app:"c",badge:"У Claude",h:"Підключіть Leeloo одним промтом",b:[
-    {t:"p",v:"MCP — протокол, яким Claude «бачить» вашу платформу: тунелі, ЛГТ, підписників, ботів. Підключення робиться один раз і далі працює в усіх діалогах."},
-    {t:"note",k:"warn",nt:"Приготуйте пошту й пароль Leeloo",v:"У браузері відкриється форма <b>«Sign in to Leeloo MCP»</b> — пошта й пароль. Це окремий вхід для MCP: навіть якщо ви вже залогінені на сайті Leeloo, форму все одно треба заповнити. Вікно живе близько двох хвилин, тож тримайте пароль під рукою <b>до того</b>, як вставляти промт."},
-    {t:"code",label:"Вставте першим повідомленням у Claude Code",v:GOAL_PROMPT},
+   {app:"c",badge:"У Claude",h:"Підключіть Leeloo як конектор",b:[
+    {t:"p",v:"MCP — протокол, яким Claude «бачить» вашу платформу: тунелі, ЛГТ, підписників, ботів. Підключення робиться один раз і далі працює в усіх діалогах. Найпростіший і єдиний спосіб, що працює скрізь — додати Leeloo як конектор у налаштуваннях Claude. Термінал і команди не потрібні."},
     {t:"ol",v:[
-      "Claude відкриє інструкцію і додасть MCP-сервер Leeloo.",
-      "Покаже посилання авторизації й відкриє браузер.",
-      "Ви входите в Leeloo й натискаєте <strong>Авторизувати</strong> — це єдина ручна дія.",
-      "Claude дочекається рядка <code>Authenticated with \"leeloo\"</code> і підтвердить результат.",
-      "Відкрийте <strong>нову сесію</strong> — інструменти Leeloo вантажаться на старті сесії."
+      "У Claude відкрийте <strong>Customize → Connectors</strong> (у застосунку — ліва панель; на claude.ai — Settings).",
+      "Натисніть <strong>Add custom connector</strong>.",
+      "Вставте адресу сервера й збережіть.",
+      "Натисніть <strong>Connect</strong> і увійдіть у свій акаунт Leeloo у вікні, що відкриється.",
+      "Увімкніть конектор і відкрийте <strong>нову сесію</strong> — інструменти вантажаться на старті."
     ]},
-    {t:"note",k:"warn",nt:"Потрібен Claude Code на вашому компʼютері",v:"Вкладка <strong>Code</strong> у застосунку Claude, команда <code>claude</code> в терміналі або розширення для IDE. <b>Не спрацює</b> у звичайному чаті на claude.ai (там немає терміналу) і в Claude Code у браузері чи хмарній сесії: там набір інструментів фіксується на старті, а вікно авторизації відкривається не у вашому браузері. Якщо ви в хмарному середовищі — Leeloo додається в його налаштуваннях, а не звідси."},
-    {t:"note",k:"info",nt:"Права адміністратора не потрібні",v:"Цей шлях не залежить від налаштувань воркспейсу — сервер записується у ваш особистий конфіг. Навіть якщо на корпоративному акаунті додавання конекторів закрите власником, промт спрацює."},
-    {t:"p",v:"Якщо щось піде не так, Claude звіриться з тією ж сторінкою сам — там розібрані типові помилки: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>інструкція підключення</a>."}
+    {t:"code",label:"Адреса конектора",v:"https://app.leeloo.ai/mcp"},
+    {t:"note",k:"info",nt:"Працює на всіх поверхнях",v:"Claude Code, застосунок Claude, Cowork, хмарні й веб-сесії, чат на claude.ai. Конектор не залежить від терміналу, від мережевих обмежень середовища й від прав адміністратора воркспейсу — трафік іде через сервери Anthropic."},
+    {t:"sub",v:"Альтернатива: командний рядок (тільки локальний Claude Code)"},
+    {t:"p",v:"Якщо ви працюєте в Claude Code на своєму компʼютері й вам звичніше термінал, ті самі дві команди:"},
+    {t:"code",label:"Термінал",v:"claude mcp add --scope user --transport http leeloo https://app.leeloo.ai/mcp\nclaude mcp login leeloo"},
+    {t:"p",v:"Логін запускайте у власному терміналі — там відкриється браузер із вашою сесією. Докладніше й розбір помилок: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>інструкція підключення</a>."}
    ]},
    {app:"l",badge:"У Leeloo.AI",h:"Підключіть Telegram-бота",b:[
     {t:"p",v:"Бот — канал, яким тунель спілкується з підписником. Спочатку створюємо його в Telegram, потім віддаємо токен платформі."},
@@ -473,20 +468,21 @@ ru:{
     ]},
     {t:"note",k:"info",nt:"Корпоративный аккаунт",v:"Если вы входите под аккаунтом компании (Team или Enterprise), часть настроек может быть закрыта администратором. Это станет важным на следующем шаге."}
    ]},
-   {app:"c",badge:"В Claude",h:"Подключите Leeloo одним промтом",b:[
-    {t:"p",v:"MCP — протокол, которым Claude «видит» вашу платформу: туннели, ЛГТ, подписчиков, ботов. Подключение делается один раз и дальше работает во всех диалогах."},
-    {t:"note",k:"warn",nt:"Приготовьте почту и пароль Leeloo",v:"В браузере откроется форма <b>«Sign in to Leeloo MCP»</b> — почта и пароль. Это отдельный вход для MCP: даже если вы уже залогинены на сайте Leeloo, форму всё равно нужно заполнить. Окно живёт около двух минут, поэтому держите пароль под рукой <b>до того</b>, как вставлять промт."},
-    {t:"code",label:"Вставьте первым сообщением в Claude Code",v:GOAL_PROMPT},
+   {app:"c",badge:"В Claude",h:"Подключите Leeloo как коннектор",b:[
+    {t:"p",v:"MCP — протокол, которым Claude «видит» вашу платформу: туннели, ЛГТ, подписчиков, ботов. Подключение делается один раз и дальше работает во всех диалогах. Самый простой и единственный способ, который работает везде — добавить Leeloo как коннектор в настройках Claude. Терминал и команды не нужны."},
     {t:"ol",v:[
-      "Claude откроет инструкцию и добавит MCP-сервер Leeloo.",
-      "Покажет ссылку авторизации и откроет браузер.",
-      "Вы входите в Leeloo и нажимаете <strong>Авторизовать</strong> — это единственное ручное действие.",
-      "Claude дождётся строки <code>Authenticated with \"leeloo\"</code> и подтвердит результат.",
-      "Откройте <strong>новую сессию</strong> — инструменты Leeloo загружаются на старте сессии."
+      "В Claude откройте <strong>Customize → Connectors</strong> (в приложении — левая панель; на claude.ai — Settings).",
+      "Нажмите <strong>Add custom connector</strong>.",
+      "Вставьте адрес сервера и сохраните.",
+      "Нажмите <strong>Connect</strong> и войдите в свой аккаунт Leeloo в открывшемся окне.",
+      "Включите коннектор и откройте <strong>новую сессию</strong> — инструменты загружаются на старте."
     ]},
-    {t:"note",k:"warn",nt:"Нужен Claude Code на вашем компьютере",v:"Вкладка <strong>Code</strong> в приложении Claude, команда <code>claude</code> в терминале или расширение для IDE. <b>Не сработает</b> в обычном чате на claude.ai (там нет терминала) и в Claude Code в браузере или облачной сессии: там набор инструментов фиксируется на старте, а окно авторизации открывается не в вашем браузере. Если вы в облачной среде — Leeloo добавляется в её настройках, а не отсюда."},
-    {t:"note",k:"info",nt:"Права администратора не нужны",v:"Этот путь не зависит от настроек воркспейса — сервер записывается в ваш личный конфиг. Даже если на корпоративном аккаунте добавление коннекторов закрыто владельцем, промт сработает."},
-    {t:"p",v:"Если что-то пойдёт не так, Claude сверится с той же страницей сам — там разобраны типичные ошибки: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>инструкция подключения</a>."}
+    {t:"code",label:"Адрес коннектора",v:"https://app.leeloo.ai/mcp"},
+    {t:"note",k:"info",nt:"Работает на всех поверхностях",v:"Claude Code, приложение Claude, Cowork, облачные и веб-сессии, чат на claude.ai. Коннектор не зависит от терминала, от сетевых ограничений среды и от прав администратора воркспейса — трафик идёт через серверы Anthropic."},
+    {t:"sub",v:"Альтернатива: командная строка (только локальный Claude Code)"},
+    {t:"p",v:"Если вы работаете в Claude Code на своём компьютере и вам привычнее терминал, те же две команды:"},
+    {t:"code",label:"Терминал",v:"claude mcp add --scope user --transport http leeloo https://app.leeloo.ai/mcp\nclaude mcp login leeloo"},
+    {t:"p",v:"Логин запускайте в своём терминале — там откроется браузер с вашей сессией. Подробнее и разбор ошибок: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>инструкция подключения</a>."}
    ]},
    {app:"l",badge:"В Leeloo.AI",h:"Подключите Telegram-бота",b:[
     {t:"p",v:"Бот — канал, которым туннель общается с подписчиком. Сначала создаём его в Telegram, потом отдаём токен платформе."},
@@ -574,20 +570,21 @@ en:{
     ]},
     {t:"note",k:"info",nt:"Company account",v:"If you sign in with a company account (Team or Enterprise), some settings may be locked by your administrator. That matters on the next step."}
    ]},
-   {app:"c",badge:"In Claude",h:"Connect Leeloo with one prompt",b:[
-    {t:"p",v:"MCP is the protocol Claude uses to see your platform: tunnels, lead gen tools, subscribers, bots. You connect once and it works in every conversation after that."},
-    {t:"note",k:"warn",nt:"Have your Leeloo email and password ready",v:"Your browser will open a <b>“Sign in to Leeloo MCP”</b> form asking for your email and password. This is a separate sign-in for MCP — being logged in on the Leeloo website does not skip it. The window lasts about two minutes, so have the password to hand <b>before</b> you paste the prompt."},
-    {t:"code",label:"Paste as your first message in Claude Code",v:GOAL_PROMPT},
+   {app:"c",badge:"In Claude",h:"Connect Leeloo as a connector",b:[
+    {t:"p",v:"MCP is the protocol Claude uses to see your platform: tunnels, lead gen tools, subscribers, bots. You connect once and it works in every conversation after that. The simplest way — and the only one that works everywhere — is to add Leeloo as a connector in Claude's settings. No terminal, no commands."},
     {t:"ol",v:[
-      "Claude opens the setup page and adds the Leeloo MCP server.",
-      "It shows you the authorization link and opens your browser.",
-      "You sign in to Leeloo and click <strong>Authorize</strong> — the only manual step.",
-      "Claude waits for the line <code>Authenticated with \"leeloo\"</code> and confirms the result.",
-      "Open a <strong>new session</strong> — Leeloo's tools load when a session starts."
+      "In Claude, open <strong>Customize → Connectors</strong> (left panel in the app; Settings on claude.ai).",
+      "Click <strong>Add custom connector</strong>.",
+      "Paste the server URL and save.",
+      "Click <strong>Connect</strong> and sign in to your Leeloo account in the window that opens.",
+      "Enable the connector and open a <strong>new session</strong> — tools load at session start."
     ]},
-    {t:"note",k:"warn",nt:"Claude Code on your own machine",v:"The <strong>Code</strong> tab in the Claude app, the <code>claude</code> command in your terminal, or the IDE extension. It <b>will not work</b> in the ordinary chat at claude.ai (no terminal) or in Claude Code on the web and other cloud sessions: there the tool set is fixed at session start and the authorization window does not open in your browser. In a cloud environment, Leeloo is added in that environment's own configuration, not from here."},
-    {t:"note",k:"info",nt:"No admin rights needed",v:"This route does not depend on workspace settings — the server is written to your personal config. Even if your company account blocks adding connectors, the prompt still works."},
-    {t:"p",v:"If anything goes wrong, Claude checks the same page itself — it covers the common failures: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>setup instructions</a>."}
+    {t:"code",label:"Connector URL",v:"https://app.leeloo.ai/mcp"},
+    {t:"note",k:"info",nt:"Works on every surface",v:"Claude Code, the Claude app, Cowork, cloud and web sessions, the chat at claude.ai. A connector does not depend on a terminal, on the environment's network limits, or on workspace admin rights — its traffic goes through Anthropic's servers."},
+    {t:"sub",v:"Alternative: command line (local Claude Code only)"},
+    {t:"p",v:"If you work in Claude Code on your own machine and prefer the terminal, the same thing in two commands:"},
+    {t:"code",label:"Terminal",v:"claude mcp add --scope user --transport http leeloo https://app.leeloo.ai/mcp\nclaude mcp login leeloo"},
+    {t:"p",v:"Run the login in your own terminal — the browser opens with your session there. Details and failure modes: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>setup instructions</a>."}
    ]},
    {app:"l",badge:"In Leeloo.AI",h:"Connect a Telegram bot",b:[
     {t:"p",v:"The bot is the channel your tunnel talks to subscribers through. Create it in Telegram first, then hand the token to the platform."},
