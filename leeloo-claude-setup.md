@@ -44,12 +44,11 @@ network. This is the route to give almost everyone.
 These steps are the user's to perform — you cannot click through Claude's
 settings for them. Walk them through it; don't loop on attempts.
 
-1. In Claude, open **Customize → Connectors** (left panel in the app; **Settings
-   → Connectors** on claude.ai).
-2. **Add custom connector**, paste the URL `https://app.leeloo.ai/mcp`, and save.
-3. Click **Connect** and sign in to Leeloo in the window that opens.
-4. Enable the connector, then start a **new** session — the current one keeps the
-   tool set it started with.
+1. In Claude, open **Customize → Connectors**.
+2. Click **"+"**, then **Add custom connector**.
+3. Paste the URL `https://app.leeloo.ai/mcp` into the URL field and click **Add**.
+4. Authorize with the Leeloo account if the connector asks.
+5. Start a **new** session — the current one keeps the tool set it started with.
 
 ### Why unblocking a domain is not the fix here
 
