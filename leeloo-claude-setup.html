@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leeloo MCP setup for Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F5F2EC;
+  --surface:#FFFFFF;
+  --surface-2:#EFEAE1;
+  --ink:#17161A;
+  --ink-2:#56525C;
+  --ink-3:#8B8792;
+  --line:#DFD8CC;
+  --line-soft:#EAE4D9;
+  --claude:#C25E3C;
+  --claude-soft:#F7E6DC;
+  --claude-line:#E8C4B0;
+  --leeloo:#0062C7;
+  --leeloo-soft:#DEEBFB;
+  --leeloo-line:#B3D2F3;
+  --mint:#0B7F63;
+  --warn:#9A5A05;
+  --warn-soft:#FAEBD2;
+  --warn-line:#EBD3A6;
+  --shadow:0 1px 2px rgba(23,22,26,.05), 0 8px 24px -12px rgba(23,22,26,.14);
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131318; --surface:#1B1B22; --surface-2:#23232C;
+    --ink:#ECE9E3; --ink-2:#A7A4AF; --ink-3:#77747F;
+    --line:#2E2E38; --line-soft:#26262F;
+    --claude:#E88C68; --claude-soft:#33201896; --claude-line:#4A2E22;
+    --leeloo:#62A9FF; --leeloo-soft:#12243796; --leeloo-line:#1E3A57;
+    --mint:#4FD1A8; --warn:#E3AA57; --warn-soft:#2E230F96; --warn-line:#463415;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131318; --surface:#1B1B22; --surface-2:#23232C;
+  --ink:#ECE9E3; --ink-2:#A7A4AF; --ink-3:#77747F;
+  --line:#2E2E38; --line-soft:#26262F;
+  --claude:#E88C68; --claude-soft:#33201896; --claude-line:#4A2E22;
+  --leeloo:#62A9FF; --leeloo-soft:#12243796; --leeloo-line:#1E3A57;
+  --mint:#4FD1A8; --warn:#E3AA57; --warn-soft:#2E230F96; --warn-line:#463415;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding:0 24px 80px;
+}
+a{color:var(--leeloo)}
+code,pre{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.wrap{max-width:760px;margin:0 auto}
+
+header.hd{padding:56px 0 30px;border-bottom:1px solid var(--line-soft)}
+.eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin:0 0 16px}
+h1{
+  font-family:"Unbounded","Manrope",sans-serif;font-weight:700;
+  font-size:clamp(30px,5vw,46px);line-height:1.05;letter-spacing:-.035em;
+  margin:0 0 18px;text-wrap:balance;
+}
+.lead{font-size:18px;line-height:1.55;color:var(--ink-2);margin:0;max-width:58ch}
+
+section{padding:34px 0;border-bottom:1px solid var(--line-soft)}
+section:last-of-type{border-bottom:none}
+h2{
+  font-family:"Manrope",sans-serif;font-weight:800;
+  font-size:clamp(19px,2.4vw,23px);letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance;
+}
+h3{font-size:13px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:26px 0 12px}
+p{margin:0 0 16px;color:var(--ink-2);max-width:64ch}
+p strong,li strong{color:var(--ink);font-weight:700}
+p:last-child{margin-bottom:0}
+
+pre.cb{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:11px;
+  margin:0 0 16px;padding:14px 16px;overflow-x:auto;
+  font-size:13.5px;line-height:1.7;color:var(--ink);
+  white-space:pre-wrap;word-break:break-word;
+}
+code{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:5px;padding:1px 6px;font-size:.86em;color:var(--ink)}
+
+ol.sl{margin:0 0 18px;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:11px}
+ol.sl li{counter-increment:s;position:relative;padding-left:34px;color:var(--ink-2);max-width:64ch}
+ol.sl li::before{
+  content:counter(s);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+}
+
+.note{display:grid;grid-template-columns:auto 1fr;gap:13px;border:1px solid;border-radius:11px;padding:15px 17px;margin:0 0 18px;max-width:66ch}
+.note .ic{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:13px;line-height:1.5}
+.note .nt{font-weight:800;font-size:14px;margin:0 0 4px;letter-spacing:-.01em}
+.note p{margin:0;font-size:14.5px;line-height:1.55}
+.note.warn{background:var(--warn-soft);border-color:var(--warn-line)}
+.note.warn .ic,.note.warn .nt{color:var(--warn)}
+.note.info{background:var(--leeloo-soft);border-color:var(--leeloo-line)}
+.note.info .ic,.note.info .nt{color:var(--leeloo)}
+
+.faults{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.fault{display:grid;grid-template-columns:250px 1fr;gap:18px;padding:16px 18px}
+.fault + .fault{border-top:1px solid var(--line-soft)}
+.fault .sig{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--claude);word-break:break-word;line-height:1.5}
+.fault p{margin:0;font-size:14.5px;max-width:none}
+@media (max-width:660px){.fault{grid-template-columns:1fr;gap:6px}}
+
+footer{padding:30px 0 0;color:var(--ink-3);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hd">
+    <p class="eyebrow">Leeloo.AI · Claude Code · MCP</p>
+    <h1>Leeloo MCP setup for Claude Code</h1>
+    <p class="lead">This page is written to be read by Claude Code during setup. If you are a person looking for the full onboarding guide, go to <a href="https://support.leeloo.ai/leeloo-claude.html">support.leeloo.ai/leeloo-claude.html</a> — там повна інструкція українською, русским и English.</p>
+  </header>
+
+  <section>
+    <h2>Connect</h2>
+
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">What the authorization link actually opens</p>
+        <p>It is not an Approve button. The link redirects to <code>/mcp/login</code>, a standalone <strong>“Sign in to Leeloo MCP”</strong> form asking for the user's Leeloo <strong>email and password</strong>. This is a separate sign-in from the Leeloo website — being already logged in at app.leeloo.ai does not skip it.</p>
+        <p style="margin-top:8px">So the user needs their Leeloo credentials <strong>to hand before you start</strong>, and needs to be at the keyboard. The link lasts about two minutes; hunting for a password burns it.</p>
+        <p style="margin-top:8px">Tell them what they are about to see, in these words: a dark “Sign in to Leeloo MCP” form with email and password. People abandon the flow because they expect a consent screen and assume the form is a phishing page or a wrong turn.</p>
+        <p style="margin-top:8px">And when the authorization URL appears, <strong>open it with a shell command</strong> — <code>open</code> on macOS, <code>Start-Process</code> on Windows, <code>xdg-open</code> on Linux. Pasting the link into the chat and waiting is what makes these logins time out. Verify it opened; a command that exits 0 has not necessarily opened anything.</p>
+        <p style="margin-top:8px"><strong>Never type the credentials yourself, and never offer to.</strong> Entering someone's password is theirs to do, whatever the reason given.</p>
+      </div>
+    </div>
+
+    <h3>1 · Register the server</h3>
+    <pre class="cb">claude mcp add --scope user --transport http leeloo https://app.leeloo.ai/mcp</pre>
+    <p>Skip this if a server named <code>leeloo</code> already points at the same URL. If it points somewhere else, see the failure modes below — do not log in to it and call that success.</p>
+
+    <h3>2 · Log in — the user's own terminal is the reliable path</h3>
+
+    <p>Have the user run this in their own terminal window:</p>
+    <pre class="cb">claude mcp login leeloo</pre>
+
+    <p>That terminal has a real TTY and opens the browser in the user's own profile, where the Leeloo session already exists — so the Approve screen appears immediately and the link is used within seconds. Prefer this whenever the user has a terminal open. It is not a fallback; it is the route that works.</p>
+
+    <h3>3 · Driving the login yourself</h3>
+
+    <p>Only when the user wants you to run it and is <strong>at the keyboard right now</strong>. Follow these four steps in order — none of them is optional.</p>
+
+    <ol class="sl">
+      <li>
+        <strong>Start the login in a console, logging to a file.</strong> <code>claude mcp login</code> needs a TTY, which an agent shell does not have, so it has to be wrapped.
+        <pre class="cb" style="margin-top:10px"># macOS / Linux
+python3 -c 'import pty,sys; pty.spawn(sys.argv[1:])' claude mcp login leeloo
+
+# Windows — pty does not exist, spawn a real console
+powershell.exe -NoProfile -Command "Start-Process cmd -ArgumentList '/c','claude mcp login leeloo &gt; %TEMP%\leeloo-login.log 2&gt;&amp;1'"</pre>
+      </li>
+      <li><strong>Poll the log</strong> until the <code>https://app.leeloo.ai/authorize?...</code> line appears.</li>
+      <li>
+        <strong>Open that URL immediately — run the command, do not just print the link.</strong>
+        <pre class="cb" style="margin-top:10px"># macOS
+open "&lt;authorization URL&gt;"
+
+# Windows — use PowerShell, not `start`
+powershell.exe -NoProfile -Command "Start-Process '&lt;authorization URL&gt;'"
+
+# Linux
+xdg-open "&lt;authorization URL&gt;"</pre>
+        <p style="margin-top:10px">On Windows, do <strong>not</strong> use <code>cmd.exe /c start "" "&lt;url&gt;"</code>. Called from a POSIX shell it opens an interactive command prompt instead of the browser — it prints the Windows banner and exits 0, so it looks like it worked while nothing was opened. <code>Start-Process</code> is silent and actually opens the tab.</p>
+      </li>
+      <li><strong>Then</strong> tell the user a tab has opened and they need to approve now, show the link underneath as a fallback, and keep polling for the authenticated line.</li>
+    </ol>
+
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">Posting the link and waiting is the failure everyone hits</p>
+        <p>A link sitting in the chat does nothing on its own. The user has to notice it, switch windows, copy it and open it — and the two-minute window is usually gone by then. You have a shell; opening the URL costs you one command. <strong>Never hand over a bare link and wait.</strong></p>
+        <p style="margin-top:8px">Use the platform command above, not a built-in or automated browser: those carry none of the user's sessions and will only ever show a sign-in form.</p>
+      </div>
+    </div>
+
+    <p><strong>After two failed attempts, stop and hand it back.</strong> Repeating the loop does not change the outcome — ask the user to run the login in their own terminal instead.</p>
+
+    <div class="note info">
+      <span class="ic">i</span>
+      <div>
+        <p class="nt">The success signal</p>
+        <p>Wait for the line <code>Authenticated with "leeloo"</code>. <code>Connected</code> on its own does <strong>not</strong> mean the login finished.</p>
+      </div>
+    </div>
+
+    <h3>Verify</h3>
+    <pre class="cb">claude mcp get leeloo</pre>
+
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">Tools load only at session start</p>
+        <p>The session that runs the setup cannot use the Leeloo tools. When the login has succeeded, tell the user to open a new session and make a request naming Leeloo. Do not attempt a Leeloo tool call in the setup session.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Requirements</h2>
+
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">Check where you are running before you start</p>
+        <p>This procedure only works in <strong>Claude Code on the user's own machine</strong>: the terminal CLI, the Code tab of the desktop app, or the IDE extension. Everything here depends on two things being true — a shell on that machine, and a browser on that same machine that the OAuth callback to <code>localhost</code> can reach.</p>
+        <p style="margin-top:8px">If either is missing, say so immediately instead of working through the steps. Half-running this procedure leaves a server entry that never authenticates and is confusing to unpick.</p>
+      </div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin:0 0 18px;font-size:14.5px">
+      <tr><td style="padding:8px 10px;border-bottom:1px solid var(--line-soft);color:var(--mint);font-weight:700">works</td><td style="padding:8px 10px;border-bottom:1px solid var(--line-soft);color:var(--ink-2)">Claude Code CLI · desktop app Code tab · IDE extension</td></tr>
+      <tr><td style="padding:8px 10px;border-bottom:1px solid var(--line-soft);color:var(--claude);font-weight:700">no</td><td style="padding:8px 10px;border-bottom:1px solid var(--line-soft);color:var(--ink-2)">the chat at claude.ai — no terminal at all; the user adds Leeloo from connector settings instead</td></tr>
+      <tr><td style="padding:8px 10px;color:var(--claude);font-weight:700">no</td><td style="padding:8px 10px;color:var(--ink-2)">Claude Code on the web and other cloud sessions — see below</td></tr>
+    </table>
+
+    <h3>Cloud and web sessions — use a connector instead</h3>
+
+    <p>In a cloud session the tool surface is fixed when the session starts: MCP servers come from the environment's configuration, so <code>claude mcp add</code> or a hand-written <code>.mcp.json</code> loads nothing into the session already running. And the OAuth callback goes to <code>localhost</code> <em>inside the sandbox</em>, not the user's browser, so the login cannot complete there either.</p>
+
+    <p>Do not attempt the command-line procedure. Give the user this instead — it works regardless of the environment's network policy, because connector traffic travels through Anthropic's servers rather than the session's network, so <strong>no domain has to be allowlisted for it</strong>:</p>
+
+    <ol class="sl">
+      <li>Open connector settings on claude.ai and add a custom connector with the URL <code>https://app.leeloo.ai/mcp</code>.</li>
+      <li>Sign in to Leeloo when the connector asks for authorization.</li>
+      <li>Enable the connector for cloud sessions.</li>
+      <li>Start a <strong>new</strong> session — the current one keeps the tool set it started with.</li>
+    </ol>
+
+    <p>Those four steps are the user's to perform; you cannot click through claude.ai settings for them. Say so plainly rather than looping on attempts.</p>
+
+    <div class="note info">
+      <span class="ic">i</span>
+      <div>
+        <p class="nt">Unblocking the domain is not the fix here</p>
+        <p>Allowlisting <code>support.leeloo.ai</code> only lets you read this page. It does not make <code>claude mcp add</code> work in a running cloud session, and it does not help the OAuth callback. If the user asks whether to unblock it, tell them the connector route needs no allowlist at all.</p>
+      </div>
+    </div>
+
+    <h3>Network access</h3>
+    <p>Managed environments often restrict outbound hosts. If fetching this page or reaching <code>app.leeloo.ai</code> is refused by an egress policy, name the blocked host to the user and stop — do not look for a mirror or another route. Unblocking a domain is their administrator's decision, not something to work around.</p>
+    <p>If the user does want this page reachable: on <a href="https://claude.ai/code">claude.ai/code</a>, open the environment selector (the cloud icon above the message box), edit the environment, set <strong>Network access</strong> to <strong>Custom</strong>, add the host to <strong>Allowed domains</strong>, and keep <strong>“Also include default list of common package managers”</strong> checked so package registries keep working. The change applies to sessions started afterwards. A shared environment can only be edited by an organization Owner.</p>
+
+    <h3>The CLI itself</h3>
+    <ol class="sl">
+      <li><strong>Claude Code</strong>, version 2.1.210 or newer — check with <code>claude --version</code> and <code>claude mcp login --help</code>.</li>
+      <li>If the shell cannot resolve <code>claude</code>, try <code>command -v claude</code> and <code>~/.local/bin/claude</code>. On Windows also check <code>cmd.exe /d /c where claude</code>. Invoke a resolved executable directly instead of reinstalling over a stale PATH.</li>
+      <li>The Claude Code desktop app does not guarantee the terminal CLI exists. Install it from <a href="https://claude.com/claude-code">claude.com/claude-code</a> only if no executable is found.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Failure modes</h2>
+    <div class="faults">
+
+      <div class="fault">
+        <div class="sig">stdin isn't a terminal</div>
+        <p>The login has no TTY. Use a pseudo-terminal wrapper, or ask the user to run <code>claude mcp login leeloo</code> in their own terminal window.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">MCP server leeloo already exists in user config</div>
+        <p>Check where it points with <code>claude mcp get leeloo</code>. Same URL — skip the add and go straight to the login. <strong>Different URL — stop and tell the user which URL is configured and which one this page asks for</strong>, then let them choose: remove the old entry with <code>claude mcp remove leeloo -s user</code> and add it again, or register this one under another name. Do not log in to the existing server and report success: that connects the user to a different environment than the one they asked for, and it looks identical in the output. <code>claude mcp add</code> has no overwrite flag.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">Connected · tools fetch failed<br>Request timed out</div>
+        <p>The backend is warming up. Retry the call. Do not re-run the login and do not remove the server.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">Needs authentication, straight after a successful login</div>
+        <p>A slow tool-list fetch can flip the status back for a few seconds. Wait and check again. Treat it as a real failure only when a Leeloo tool repeatedly returns an explicit authentication error rather than a timeout.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">HTTP 502 and other 5xx during OAuth</div>
+        <p>Retryable service failures during discovery, registration, callback or token exchange — not bad credentials, and not a reason to reinstall. Wait for the current login process to exit, then retry with backoff. Never run two logins at once.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">The open command reported success but no tab appeared</div>
+        <p>On Windows this is almost always <code>cmd.exe /c start "" "&lt;url&gt;"</code>. From a POSIX shell, <code>cmd</code> reads the empty quotes as the command and opens an interactive prompt: it prints the Windows version banner and exits 0, so it reads as success while the browser was never touched. Use <code>powershell.exe -NoProfile -Command "Start-Process '&lt;url&gt;'"</code>, which prints nothing when it works.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">The link was posted in the chat and the login timed out</div>
+        <p>You printed the authorization URL instead of opening it. The user cannot beat a two-minute window by spotting a link, switching windows and pasting it. Start one fresh login and this time run <code>start</code> / <code>open</code> / <code>xdg-open</code> on the URL the moment it appears in the log — the link goes in the chat only as a fallback, after the tab is already opening.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">A blank console window opens and nothing happens</div>
+        <p>Expected: the login's output is redirected to a log file, so the window has nothing to show. Read the log, not the window. If the log is still empty after about ten seconds, the command never started — check that <code>claude</code> resolves from that shell, then hand the login back to the user's own terminal.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">“Sign in to Leeloo MCP” — email and password, no Approve button</div>
+        <p>This is the correct screen, not an error. MCP authorization has its own sign-in; the user enters their Leeloo email and password there and the flow continues on its own — the request is carried through the <code>authReq</code> parameter, so nothing is lost at sign-in. Reassure them and wait. If the window expired while they were finding the password, start one fresh login now that they have it ready.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">Authentication timeout</div>
+        <p>The authorization link expired before it was approved — the usual cause is that nobody opened it. Log out, start one fresh login, <strong>open the new URL in the browser straight away</strong> rather than only printing it, and resume polling. Old links do not work.</p>
+      </div>
+
+      <div class="fault">
+        <div class="sig">claude: command not found</div>
+        <p>The terminal CLI is missing. See Requirements above.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="skills">
+    <h2>Install the skills</h2>
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">You do not install the skills — the user does</p>
+        <p>Leeloo's skills are added through Claude's own settings, which you cannot operate. Do not copy files into <code>~/.claude/skills/</code>: that creates a second, divergent copy the user cannot see or switch off from the settings list. Walk them through the steps below instead.</p>
+      </div>
+    </div>
+
+    <p>Two skills ship with Leeloo, as ZIP archives downloaded from the guide. Marketing first, tunnel second — the tunnel is built from the marketing foundation.</p>
+
+    <ol class="sl">
+      <li>Download both archives from <a href="https://support.leeloo.ai/leeloo-claude.html">the guide</a>. They are not unzipped.</li>
+      <li>In the Claude app, open <strong>Customize → Skills</strong>.</li>
+      <li><strong>Add</strong> → pick <code>marketing-foundation-builder.zip</code>.</li>
+      <li><strong>Add</strong> → pick <code>tunnel-creator.zip</code>.</li>
+      <li>Check both are switched on in the list.</li>
+      <li>Open a new session — skills load at session start.</li>
+    </ol>
+
+    <p>If an upload is rejected, the archive is the thing to check: it must contain a single skill folder at its root, with <code>SKILL.md</code> inside it, and that file must open with a <code>---</code> frontmatter block carrying <code>name:</code> and <code>description:</code>. An archive of a loose file, or one wrapped in an extra folder, will not load.</p>
+
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">Skills load at session start</p>
+        <p>The session that installs them cannot use them. After both files are in place, tell the user to open a new session. Do not invoke a skill in the install session.</p>
+      </div>
+    </div>
+
+    <div class="note info">
+      <span class="ic">i</span>
+      <div>
+        <p class="nt">Writing into the user's config directory</p>
+        <p>These commands write to the user's home directory, so the environment may ask them to approve it. That approval is theirs to give — surface the prompt and wait rather than looking for a way around it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Disconnect</h2>
+    <p>Clear the stored credentials but keep the server in the config:</p>
+    <pre class="cb">claude mcp logout leeloo</pre>
+    <p>Remove the server entirely:</p>
+    <pre class="cb">claude mcp remove leeloo -s user</pre>
+  </section>
+
+  <section>
+    <h2>Environment</h2>
+    <div class="note warn">
+      <span class="ic">!</span>
+      <div>
+        <p class="nt">This is the live account</p>
+        <p><code>app.leeloo.ai</code> is production: tunnels, subscribers and offers here are real and in use. Show the user a plan before creating, editing or deleting anything, and never delete in bulk without their explicit go-ahead.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Leeloo.AI · setup reference for Claude Code. Full guide: <a href="https://support.leeloo.ai/leeloo-claude.html">leeloo-claude.html</a></footer>
+
+</div>
+
+</body>
+</html>

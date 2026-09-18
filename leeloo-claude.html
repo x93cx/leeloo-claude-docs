@@ -1,0 +1,760 @@
+<meta charset="utf-8">
+<title>Leeloo.AI у Claude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F5F2EC;
+  --surface:#FFFFFF;
+  --surface-2:#EFEAE1;
+  --ink:#17161A;
+  --ink-2:#56525C;
+  --ink-3:#8B8792;
+  --line:#DFD8CC;
+  --line-soft:#EAE4D9;
+  --claude:#C25E3C;
+  --claude-soft:#F7E6DC;
+  --claude-line:#E8C4B0;
+  --leeloo:#0062C7;
+  --leeloo-soft:#DEEBFB;
+  --leeloo-line:#B3D2F3;
+  --mint:#0B7F63;
+  --warn:#9A5A05;
+  --warn-soft:#FAEBD2;
+  --warn-line:#EBD3A6;
+  --shadow:0 1px 2px rgba(23,22,26,.05), 0 8px 24px -12px rgba(23,22,26,.14);
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131318;
+    --surface:#1B1B22;
+    --surface-2:#23232C;
+    --ink:#ECE9E3;
+    --ink-2:#A7A4AF;
+    --ink-3:#77747F;
+    --line:#2E2E38;
+    --line-soft:#26262F;
+    --claude:#E88C68;
+    --claude-soft:#33201896;
+    --claude-line:#4A2E22;
+    --leeloo:#62A9FF;
+    --leeloo-soft:#12243796;
+    --leeloo-line:#1E3A57;
+    --mint:#4FD1A8;
+    --warn:#E3AA57;
+    --warn-soft:#2E230F96;
+    --warn-line:#463415;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131318;
+  --surface:#1B1B22;
+  --surface-2:#23232C;
+  --ink:#ECE9E3;
+  --ink-2:#A7A4AF;
+  --ink-3:#77747F;
+  --line:#2E2E38;
+  --line-soft:#26262F;
+  --claude:#E88C68;
+  --claude-soft:#33201896;
+  --claude-line:#4A2E22;
+  --leeloo:#62A9FF;
+  --leeloo-soft:#12243796;
+  --leeloo-line:#1E3A57;
+  --mint:#4FD1A8;
+  --warn:#E3AA57;
+  --warn-soft:#2E230F96;
+  --warn-line:#463415;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--leeloo)}
+code,kbd,pre{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line-soft);
+}
+.topbar .wrap{display:flex;align-items:center;gap:14px;height:62px}
+.brandmark{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:-.01em;font-size:15px;min-width:0;overflow:hidden;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.dot.c{background:var(--claude)}
+.dot.l{background:var(--leeloo)}
+.brandmark .plus{color:var(--ink-3);font-weight:500}
+.spacer{flex:1}
+.langs{display:flex;gap:2px;background:var(--surface-2);border-radius:999px;padding:3px;border:1px solid var(--line-soft);flex:none}
+.langs button{
+  font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.04em;
+  border:0;background:transparent;color:var(--ink-3);
+  padding:5px 13px;border-radius:999px;cursor:pointer;transition:.15s;
+}
+.langs button:hover{color:var(--ink)}
+.langs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+:focus-visible{outline:2px solid var(--leeloo);outline-offset:2px;border-radius:6px}
+
+/* ---------- hero ---------- */
+.hero{padding:76px 0 52px;border-bottom:1px solid var(--line-soft)}
+.eyebrow{
+  font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 20px;
+}
+h1{
+  font-family:"Unbounded","Manrope",sans-serif;
+  font-weight:700;font-size:clamp(38px,6.2vw,68px);line-height:1.02;letter-spacing:-.035em;
+  margin:0 0 22px;text-wrap:balance;max-width:16ch;
+}
+h1 .accent{
+  background:linear-gradient(100deg,var(--leeloo) 0%,var(--leeloo) 42%,var(--claude) 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lead{font-size:clamp(17px,2.1vw,20px);line-height:1.55;color:var(--ink-2);max-width:56ch;margin:0 0 30px}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 15px;
+}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:250px 1fr;gap:64px;align-items:start;padding:56px 0 40px}
+.rail{position:sticky;top:86px}
+.rail-title{font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 16px}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.rail a{
+  display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:baseline;
+  text-decoration:none;color:var(--ink-2);font-size:14.5px;font-weight:600;
+  padding:10px 12px;border-radius:10px;border-left:2px solid transparent;transition:.15s;
+}
+.rail a:hover{background:var(--surface-2);color:var(--ink)}
+.rail a .n{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-3);font-weight:500}
+.rail a.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.rail a.on.c{border-left-color:var(--claude)}
+.rail a.on.l{border-left-color:var(--leeloo)}
+.rail a.on .n{color:inherit}
+
+/* ---------- steps ---------- */
+.steps{display:flex;flex-direction:column;gap:28px;min-width:0}
+.step{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:86px;
+}
+.step .stripe{height:3px}
+.step.c .stripe{background:var(--claude)}
+.step.l .stripe{background:var(--leeloo)}
+.step.b .stripe{background:linear-gradient(90deg,var(--claude),var(--leeloo))}
+.step-hd{display:flex;align-items:flex-start;gap:20px;padding:28px 32px 4px}
+.numeral{
+  font-family:"Unbounded",monospace;font-weight:500;font-size:34px;line-height:1;
+  letter-spacing:-.04em;color:var(--ink-3);opacity:.5;flex:none;padding-top:2px;
+}
+.step h2{
+  font-family:"Manrope",sans-serif;font-weight:800;font-size:clamp(21px,2.5vw,26px);
+  letter-spacing:-.02em;line-height:1.2;margin:0 0 9px;text-wrap:balance;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 11px;border-radius:999px;border:1px solid;
+}
+.badge.c{color:var(--claude);background:var(--claude-soft);border-color:var(--claude-line)}
+.badge.l{color:var(--leeloo);background:var(--leeloo-soft);border-color:var(--leeloo-line)}
+.step-body{padding:14px 32px 32px 76px}
+.step-body>*:first-child{margin-top:0}
+.step-body p{margin:0 0 18px;color:var(--ink-2);max-width:64ch}
+.step-body p strong{color:var(--ink);font-weight:700}
+
+h3.sub{
+  font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:28px 0 14px;display:flex;align-items:center;gap:12px;
+}
+h3.sub::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+
+ol.steplist{margin:0 0 20px;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steplist li{
+  counter-increment:s;position:relative;padding-left:34px;color:var(--ink-2);max-width:64ch;
+}
+ol.steplist li::before{
+  content:counter(s);position:absolute;left:0;top:1px;
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;
+  font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;
+  background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
+}
+ol.steplist li strong{color:var(--ink);font-weight:700}
+ol.steplist code,p code,.note code{
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:5px;
+  padding:1px 6px;font-size:.86em;color:var(--ink);
+}
+
+/* code / copy block */
+.cb{margin:0 0 20px;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface-2)}
+.cb-hd{
+  display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;
+  border-bottom:1px solid var(--line-soft);
+}
+.cb-label{font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.cb pre{margin:0;padding:14px;overflow-x:auto;font-size:13.5px;line-height:1.6;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.copy{
+  margin-left:auto;font:inherit;font-size:12px;font-weight:700;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  border-radius:7px;padding:4px 11px;cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.copy:hover{color:var(--ink);border-color:var(--ink-3)}
+.copy.done{color:var(--mint);border-color:var(--mint)}
+
+/* notes */
+.note{
+  display:grid;grid-template-columns:auto 1fr;gap:13px;
+  border:1px solid;border-radius:11px;padding:15px 17px;margin:0 0 20px;max-width:66ch;
+}
+.note .ic{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:13px;line-height:1.5}
+.note .nt{font-weight:800;font-size:14px;margin:0 0 4px;letter-spacing:-.01em}
+.note p{margin:0;font-size:14.5px;line-height:1.55}
+.note.warn{background:var(--warn-soft);border-color:var(--warn-line)}
+.note.warn .ic,.note.warn .nt{color:var(--warn)}
+.note.warn p{color:var(--ink-2)}
+.note.info{background:var(--leeloo-soft);border-color:var(--leeloo-line)}
+.note.info .ic,.note.info .nt{color:var(--leeloo)}
+.note.info p{color:var(--ink-2)}
+
+/* rules list in step 4 */
+.rules{display:grid;gap:11px;margin:0 0 26px;padding:0;list-style:none}
+.rules li{
+  display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:baseline;
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:10px;padding:13px 16px;
+  color:var(--ink-2);font-size:15px;max-width:66ch;
+}
+.rules b{color:var(--ink);font-weight:800}
+.rules .k{
+  font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);
+  border:1px solid var(--line);border-radius:5px;padding:2px 7px;background:var(--surface);
+}
+
+/* skill download links */
+.dl{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:14.5px;font-weight:700;color:var(--ink);text-decoration:none;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:10px 15px;margin:0 9px 9px 0;transition:.15s;
+}
+.dl:hover{border-color:var(--leeloo);color:var(--leeloo)}
+.dl .ext{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;color:var(--ink-3)}
+.dl:hover .ext{color:var(--leeloo)}
+
+/* prompt cards */
+.prompts{display:grid;gap:12px;margin:0}
+.pc{border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden}
+.pc>summary{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;list-style:none;
+  font-weight:700;font-size:15px;letter-spacing:-.01em;
+}
+.pc>summary::-webkit-details-marker{display:none}
+.pc>summary:hover{background:var(--surface-2)}
+.pc .tag{
+  font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;
+  color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:2px 7px;flex:none;
+}
+.pc .chev{margin-left:auto;color:var(--ink-3);transition:transform .18s;flex:none;font-size:13px}
+.pc[open] .chev{transform:rotate(90deg)}
+.pc .pbody{padding:0 16px 16px}
+.pc .pbody .cb{margin:0}
+.pc .why{font-size:13.5px;color:var(--ink-3);margin:10px 0 0;max-width:66ch}
+
+/* footer */
+.foot{border-top:1px solid var(--line-soft);padding:34px 0 64px;color:var(--ink-3);font-size:14px}
+.foot .fwrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.foot a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line)}
+.foot a:hover{color:var(--ink)}
+
+@media (max-width:900px){
+  .cols{grid-template-columns:1fr;gap:0;padding-top:36px}
+  .rail{position:static;margin-bottom:34px;padding-bottom:26px;border-bottom:1px solid var(--line-soft)}
+  .step-body{padding:14px 22px 26px 22px}
+  .step-hd{padding:22px 22px 4px;gap:14px}
+  .numeral{font-size:26px}
+  .wrap{padding:0 18px}
+  .hero{padding:52px 0 40px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="brandmark"><span class="dot l"></span>Leeloo.AI<span class="plus">×</span><span class="dot c"></span>Claude</span>
+    <span class="spacer"></span>
+    <div class="langs" id="langs" role="group" aria-label="Language"></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow" id="hEyebrow"></p>
+    <h1 id="hTitle"></h1>
+    <p class="lead" id="hLead"></p>
+    <div class="chips" id="hChips"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="cols">
+    <nav class="rail" aria-label="Steps">
+      <p class="rail-title" id="railTitle"></p>
+      <ol id="rail"></ol>
+    </nav>
+    <main class="steps" id="steps"></main>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap fwrap">
+    <span id="footNote"></span>
+    <span><a href="https://leeloo.ai" target="_blank" rel="noopener">leeloo.ai</a> · <a href="https://claude.ai/download" target="_blank" rel="noopener">claude.ai/download</a></span>
+  </div>
+</footer>
+
+<script>
+/* Підключення йде тільки через промт. Адреса MCP-сервера живе на сторінці-інструкції
+   для Claude (SETUP_URL) — клієнт її ніколи не вводить руками, тож тут вона не потрібна
+   і не може розійтися з реальною. */
+const SETUP_URL = "https://support.leeloo.ai/leeloo-claude-setup.html";
+/* Уся процедура живе на сторінці — її можна правити централізовано.
+   У промті лишається тільки те, чого сторінка не донесе, якщо вона
+   недоступна: куди подітись далі. Egress-політика керованих середовищ
+   ріже support.leeloo.ai, і без цього рядка агент лишається ні з чим. */
+const GOAL_PROMPT =
+  "/goal Read " + SETUP_URL + " and connect the Leeloo MCP server. " +
+  "If that page is blocked, say so instead of retrying, and tell me to add " +
+  "https://app.leeloo.ai/mcp as a connector in my settings.";
+/* Скіли клієнт ставить сам через Customize → Skills. Формат — ZIP, усередині тека
+   скіла з файлом SKILL.md. Агент цього зробити не може: це UI самого Claude. */
+const SKILL_MARKETING = "https://support.leeloo.ai/skills/marketing-foundation-builder.zip";
+const SKILL_TUNNEL = "https://support.leeloo.ai/skills/tunnel-creator.zip";
+
+const DATA = {
+ua:{
+  name:"UA",
+  eyebrow:"Інтеграція",
+  title:['Leeloo.AI ','у Claude'],
+  lead:"Підключіть свій акаунт Leeloo до Claude — і збирайте тунелі продажів, інструменти лідогенерації та ботів звичайною мовою, не відкриваючи конструктор.",
+  chips:["4 кроки","≈15 хвилин","Windows 10+ / macOS 11+"],
+  railTitle:"Кроки",
+  rail:["Claude Desktop","Підключення Leeloo","Telegram-бот","Скіли"],
+  copy:"Копіювати", copied:"Скопійовано",
+  foot:"Перед будь-якою зміною Claude показує план. Переглядайте його — особливо на живих тунелях.",
+  steps:[
+   {app:"c",badge:"У Claude",h:"Встановіть Claude Desktop",b:[
+    {t:"p",v:"Claude Desktop — застосунок, у якому працює інтеграція. Встановлення займає кілька хвилин, окремих ліцензій не потрібно."},
+    {t:"ol",v:[
+      "Відкрийте <a href='https://claude.ai/download' target='_blank' rel='noopener'>claude.ai/download</a> і завантажте версію для своєї системи.",
+      "<strong>Windows:</strong> потрібна Windows 10 або новіша. Для повного набору функцій запускайте інсталятор із правами адміністратора та увімкніть компонент <code>Virtual Machine Platform</code>.",
+      "<strong>macOS:</strong> потрібна macOS 11 Big Sur або новіша. Universal-збірка працює і на Intel, і на Apple Silicon.",
+      "Запустіть Claude і увійдіть у свій акаунт.",
+      "Відкрийте вкладку <strong>Code</strong> — саме в ній виконується підключення на наступному кроці."
+    ]},
+    {t:"note",k:"info",nt:"Корпоративний акаунт",v:"Якщо ви входите під акаунтом компанії (Team або Enterprise), частина налаштувань може бути закрита адміністратором. Це стане важливим на наступному кроці."}
+   ]},
+   {app:"c",badge:"У Claude",h:"Підключіть Leeloo одним промтом",b:[
+    {t:"p",v:"MCP — протокол, яким Claude «бачить» вашу платформу: тунелі, ЛГТ, підписників, ботів. Підключення робиться один раз і далі працює в усіх діалогах."},
+    {t:"note",k:"warn",nt:"Приготуйте пошту й пароль Leeloo",v:"У браузері відкриється форма <b>«Sign in to Leeloo MCP»</b> — пошта й пароль. Це окремий вхід для MCP: навіть якщо ви вже залогінені на сайті Leeloo, форму все одно треба заповнити. Вікно живе близько двох хвилин, тож тримайте пароль під рукою <b>до того</b>, як вставляти промт."},
+    {t:"code",label:"Вставте першим повідомленням у Claude Code",v:GOAL_PROMPT},
+    {t:"ol",v:[
+      "Claude відкриє інструкцію і додасть MCP-сервер Leeloo.",
+      "Покаже посилання авторизації й відкриє браузер.",
+      "Ви входите в Leeloo й натискаєте <strong>Авторизувати</strong> — це єдина ручна дія.",
+      "Claude дочекається рядка <code>Authenticated with \"leeloo\"</code> і підтвердить результат.",
+      "Відкрийте <strong>нову сесію</strong> — інструменти Leeloo вантажаться на старті сесії."
+    ]},
+    {t:"note",k:"warn",nt:"Потрібен Claude Code на вашому компʼютері",v:"Вкладка <strong>Code</strong> у застосунку Claude, команда <code>claude</code> в терміналі або розширення для IDE. <b>Не спрацює</b> у звичайному чаті на claude.ai (там немає терміналу) і в Claude Code у браузері чи хмарній сесії: там набір інструментів фіксується на старті, а вікно авторизації відкривається не у вашому браузері. Якщо ви в хмарному середовищі — Leeloo додається в його налаштуваннях, а не звідси."},
+    {t:"note",k:"info",nt:"Права адміністратора не потрібні",v:"Цей шлях не залежить від налаштувань воркспейсу — сервер записується у ваш особистий конфіг. Навіть якщо на корпоративному акаунті додавання конекторів закрите власником, промт спрацює."},
+    {t:"p",v:"Якщо щось піде не так, Claude звіриться з тією ж сторінкою сам — там розібрані типові помилки: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>інструкція підключення</a>."}
+   ]},
+   {app:"l",badge:"У Leeloo.AI",h:"Підключіть Telegram-бота",b:[
+    {t:"p",v:"Бот — канал, яким тунель спілкується з підписником. Спочатку створюємо його в Telegram, потім віддаємо токен платформі."},
+    {t:"sub",v:"У Telegram"},
+    {t:"ol",v:[
+      "Відкрийте <a href='https://t.me/botfather' target='_blank' rel='noopener'>t.me/botfather</a> і натисніть <strong>Start</strong>.",
+      "Надішліть команду <code>/newbot</code>.",
+      "Вкажіть <strong>імʼя</strong> бота — будь-якою мовою, його можна змінити пізніше.",
+      "Вкажіть <strong>псевдонім</strong> (username): лише латиниця, цифри й підкреслення, мінімум 5 символів, обовʼязкове закінчення <code>bot</code>. Псевдонім змінити не можна.",
+      "Скопіюйте <strong>токен</strong>, який надішле BotFather."
+    ]},
+    {t:"note",k:"warn",nt:"Токен — це ключ до бота",v:"Не публікуйте його і не пересилайте в загальні чати. Якщо токен витік — згенеруйте новий командою <code>/token</code> у BotFather."},
+    {t:"sub",v:"У Leeloo.AI"},
+    {t:"ol",v:[
+      "Перейдіть у <strong>Налаштування → Інтеграції → Месенджери</strong>.",
+      "Натисніть <strong>Додати нове зʼєднання</strong>.",
+      "Виберіть месенджер <strong>Telegram</strong>.",
+      "Вставте токен і натисніть <strong>Підключити</strong>."
+    ]},
+    {t:"note",k:"info",nt:"Помилка «Даний токен недійсний»",v:"Найчастіша причина — пробіл до або після токена. Приберіть їх і вставте ще раз. Якщо не допомогло, згенеруйте новий токен командою <code>/token</code> у BotFather."},
+    {t:"p",v:"Готово. Тепер бота можна вибрати як канал звʼязку в налаштуваннях інструментів лідогенерації."}
+   ]},
+   {app:"b",badge:"Claude × Leeloo",h:"Встановіть скіли Leeloo",b:[
+    {t:"p",v:"Скіл — це готова методика агенції, записана так, щоб Claude виконував її сам. Ви не переказуєте йому процес щоразу: він підхоплює потрібний скіл, щойно ви описали задачу своїми словами."},
+    {t:"p",v:"Завантажте обидва файли й додайте їх у налаштуваннях Claude."},
+    {t:"p",v:"<a class='dl' href='"+SKILL_MARKETING+"' download>1 · Фундамент маркетингу <span class='ext'>.zip</span></a><a class='dl' href='"+SKILL_TUNNEL+"' download>2 · Конструктор тунелів <span class='ext'>.zip</span></a>"},
+    {t:"ol",v:[
+      "Натисніть обидві кнопки вище — збережуться два ZIP-архіви. Розпаковувати їх не треба.",
+      "У застосунку Claude відкрийте <strong>Customize → Skills</strong>.",
+      "Натисніть <strong>Add</strong> і виберіть перший архів — <strong>фундамент маркетингу</strong>.",
+      "Так само додайте другий — конструктор тунелів.",
+      "Перевірте, що обидва скіли в списку увімкнені.",
+      "Відкрийте <strong>нову сесію</strong> — скіли вантажаться на старті сесії."
+    ]},
+    {t:"note",k:"info",nt:"Порядок не випадковий",v:"Спершу <b>маркетинг</b>, потім <b>тунель</b>. Тунель збирається з фундаменту маркетингу: сегментів, оферів, наскрізної обіцянки. Якщо почати з тунелю, доведеться вигадувати ці рішення на ходу."},
+    {t:"note",k:"warn",nt:"Завантажуйте саме ZIP",v:"Claude чекає архів, усередині якого лежить тека скіла. Не розпаковуйте його і не намагайтесь додати окремий файл — завантаження не пройде."},
+    {t:"sub",v:"Фундамент маркетингу"},
+    {t:"p",v:"Проводить бриф і збирає стратегію: ніша й підніша, сегменти з болями, ланцюг оферів з УТП, шлях клієнта, ТЗ на креативи Meta Ads і готовий HTML для ЛГТ. Зупиняється після кожного етапу й чекає на ваше затвердження."},
+    {t:"code",label:"Як запустити",v:"Збери фундамент маркетингу для мого бізнесу"},
+    {t:"sub",v:"Конструктор тунелів"},
+    {t:"p",v:"Збирає тунель прямо в акаунті: блоки, звʼязки, кнопки, теги, кастомні поля, ЛГТ, офери. Працює з реальними обʼєктами, тому вимагає підключеного MCP з кроку 2."},
+    {t:"code",label:"Як запустити",v:"Збери тунель продажів за фундаментом маркетингу. Спершу покажи план, нічого не змінюй"},
+    {t:"note",k:"warn",nt:"Відкрийте нову сесію після встановлення",v:"Скіли, як і інструменти, вантажаться на старті сесії. Та сесія, яка їх встановила, ними скористатись не може."}
+   ]}
+  ],
+  prompts:[
+   {tag:"audit",h:"Аудит акаунта",why:"З цього варто починати: Claude покаже, що вже є, і нічого не зачепить.",
+    v:"Підключися до Leeloo і покажи поточний стан акаунта: список тунелів продажів, інструментів лідогенерації та підключених ботів. Для кожного тунелю вкажи кількість підписників і дату останньої зміни. Нічого не змінюй."},
+   {tag:"build",h:"Тунель з нуля",why:"Замініть значення у квадратних дужках своїми.",
+    v:"Збери тунель продажів для ніші [ніша] з оффером [що продаємо] у Telegram.\nСтруктура:\n1. Привітання з коротким поясненням, що людина отримає.\n2. Блок «Запитати інформацію»: імʼя і телефон, зберегти в картку підписника.\n3. Два повідомлення прогріву з інтервалом 1 день.\n4. Оффер із кнопкою оплати.\n5. Гілка для тих, хто не відповів протягом 24 годин.\nСпершу покажи план блоками. Нічого не створюй, поки я не підтверджу."},
+   {tag:"data",h:"Збір даних у картку клієнта",why:"Блок «Запитати інформацію» перевіряє формат відповіді й пише її в кастомне поле.",
+    v:"Додай у тунель [назва тунелю] блок «Запитати інформацію»: запитати місто і зберегти відповідь у кастомне поле city. Якщо підписник не відповість протягом 2 годин — надішли одне нагадування. Покажи, куди саме в дереві тунелю стане блок."},
+   {tag:"lgt",h:"ЛГТ і джерела трафіку",why:"Для кожного джерела платформа генерує окреме посилання зі своєю статистикою.",
+    v:"Створи інструмент лідогенерації типу «посилання» для тунелю [назва тунелю] і додай три джерела трафіку: instagram_bio, telegram_channel, ads_meta. Дай мені готові посилання списком."},
+   {tag:"faq",h:"Розумні відповіді на ключі",why:"Розумні відповіді працюють усередині тунелю, ЧаВо — у вільному чаті поза ним.",
+    v:"Налаштуй розумні відповіді в тунелі [назва тунелю] на ключі «ціна», «скільки коштує», «вартість». Бот має відповісти текстом [ваш текст] і поставити підписнику тег price_asked."},
+   {tag:"alert",h:"Сповіщення менеджеру",why:"Блок «Дія» вміє слати сповіщення в Telegram у момент проходження блоку.",
+    v:"Додай у тунель [назва тунелю] блок «Дія»: коли підписник доходить до блоку з оффером, надішли сповіщення в Telegram менеджеру. У сповіщенні — імʼя, телефон і джерело трафіку підписника."},
+   {tag:"sender",h:"Розумна розсилка по сегменту",why:"Спочатку сегмент і його розмір, лише потім текст.",
+    v:"Підбери підписників, які підписалися за останні 14 днів, дійшли до блоку з оффером, але не оплатили. Покажи, скільки їх. Потім склади текст розумної розсилки з нагадуванням і дедлайном 48 годин. Не надсилай, поки я не підтверджу."},
+   {tag:"unit",h:"Юніт-економіка тунелю",why:"Витрати вносяться вручну в розділі «Витрати», решта рахується зі «Звітів».",
+    v:"Порахуй по тунелю [назва тунелю] за минулий місяць: витрати, кількість підписників, продажі, CAC, LTV і ROI. Витрати візьми з розділу «Витрати», решту — зі «Звітів». Скажи, на якому етапі найбільша просадка і чому."}
+  ]
+},
+
+ru:{
+  name:"RU",
+  eyebrow:"Интеграция",
+  title:['Leeloo.AI ','в Claude'],
+  lead:"Подключите свой аккаунт Leeloo к Claude — и собирайте туннели продаж, инструменты лидогенерации и ботов обычным языком, не открывая конструктор.",
+  chips:["4 шага","≈15 минут","Windows 10+ / macOS 11+"],
+  railTitle:"Шаги",
+  rail:["Claude Desktop","Подключение Leeloo","Telegram-бот","Скилы"],
+  copy:"Копировать", copied:"Скопировано",
+  foot:"Перед любым изменением Claude показывает план. Просматривайте его — особенно на живых туннелях.",
+  steps:[
+   {app:"c",badge:"В Claude",h:"Установите Claude Desktop",b:[
+    {t:"p",v:"Claude Desktop — приложение, в котором работает интеграция. Установка занимает несколько минут, отдельных лицензий не нужно."},
+    {t:"ol",v:[
+      "Откройте <a href='https://claude.ai/download' target='_blank' rel='noopener'>claude.ai/download</a> и скачайте версию для своей системы.",
+      "<strong>Windows:</strong> нужна Windows 10 или новее. Для полного набора функций запускайте установщик с правами администратора и включите компонент <code>Virtual Machine Platform</code>.",
+      "<strong>macOS:</strong> нужна macOS 11 Big Sur или новее. Universal-сборка работает и на Intel, и на Apple Silicon.",
+      "Запустите Claude и войдите в свой аккаунт.",
+      "Откройте вкладку <strong>Code</strong> — именно в ней выполняется подключение на следующем шаге."
+    ]},
+    {t:"note",k:"info",nt:"Корпоративный аккаунт",v:"Если вы входите под аккаунтом компании (Team или Enterprise), часть настроек может быть закрыта администратором. Это станет важным на следующем шаге."}
+   ]},
+   {app:"c",badge:"В Claude",h:"Подключите Leeloo одним промтом",b:[
+    {t:"p",v:"MCP — протокол, которым Claude «видит» вашу платформу: туннели, ЛГТ, подписчиков, ботов. Подключение делается один раз и дальше работает во всех диалогах."},
+    {t:"note",k:"warn",nt:"Приготовьте почту и пароль Leeloo",v:"В браузере откроется форма <b>«Sign in to Leeloo MCP»</b> — почта и пароль. Это отдельный вход для MCP: даже если вы уже залогинены на сайте Leeloo, форму всё равно нужно заполнить. Окно живёт около двух минут, поэтому держите пароль под рукой <b>до того</b>, как вставлять промт."},
+    {t:"code",label:"Вставьте первым сообщением в Claude Code",v:GOAL_PROMPT},
+    {t:"ol",v:[
+      "Claude откроет инструкцию и добавит MCP-сервер Leeloo.",
+      "Покажет ссылку авторизации и откроет браузер.",
+      "Вы входите в Leeloo и нажимаете <strong>Авторизовать</strong> — это единственное ручное действие.",
+      "Claude дождётся строки <code>Authenticated with \"leeloo\"</code> и подтвердит результат.",
+      "Откройте <strong>новую сессию</strong> — инструменты Leeloo загружаются на старте сессии."
+    ]},
+    {t:"note",k:"warn",nt:"Нужен Claude Code на вашем компьютере",v:"Вкладка <strong>Code</strong> в приложении Claude, команда <code>claude</code> в терминале или расширение для IDE. <b>Не сработает</b> в обычном чате на claude.ai (там нет терминала) и в Claude Code в браузере или облачной сессии: там набор инструментов фиксируется на старте, а окно авторизации открывается не в вашем браузере. Если вы в облачной среде — Leeloo добавляется в её настройках, а не отсюда."},
+    {t:"note",k:"info",nt:"Права администратора не нужны",v:"Этот путь не зависит от настроек воркспейса — сервер записывается в ваш личный конфиг. Даже если на корпоративном аккаунте добавление коннекторов закрыто владельцем, промт сработает."},
+    {t:"p",v:"Если что-то пойдёт не так, Claude сверится с той же страницей сам — там разобраны типичные ошибки: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>инструкция подключения</a>."}
+   ]},
+   {app:"l",badge:"В Leeloo.AI",h:"Подключите Telegram-бота",b:[
+    {t:"p",v:"Бот — канал, которым туннель общается с подписчиком. Сначала создаём его в Telegram, потом отдаём токен платформе."},
+    {t:"sub",v:"В Telegram"},
+    {t:"ol",v:[
+      "Откройте <a href='https://t.me/botfather' target='_blank' rel='noopener'>t.me/botfather</a> и нажмите <strong>Start</strong>.",
+      "Отправьте команду <code>/newbot</code>.",
+      "Укажите <strong>имя</strong> бота — на любом языке, его можно изменить позже.",
+      "Укажите <strong>псевдоним</strong> (username): только латиница, цифры и подчёркивание, минимум 5 символов, обязательное окончание <code>bot</code>. Псевдоним изменить нельзя.",
+      "Скопируйте <strong>токен</strong>, который пришлёт BotFather."
+    ]},
+    {t:"note",k:"warn",nt:"Токен — это ключ к боту",v:"Не публикуйте его и не пересылайте в общие чаты. Если токен утёк — сгенерируйте новый командой <code>/token</code> в BotFather."},
+    {t:"sub",v:"В Leeloo.AI"},
+    {t:"ol",v:[
+      "Перейдите в <strong>Настройки → Интеграции → Мессенджеры</strong>.",
+      "Нажмите <strong>Добавить новое соединение</strong>.",
+      "Выберите мессенджер <strong>Telegram</strong>.",
+      "Вставьте токен и нажмите <strong>Подключить</strong>."
+    ]},
+    {t:"note",k:"info",nt:"Ошибка «Данный токен недействителен»",v:"Самая частая причина — пробел до или после токена. Уберите их и вставьте ещё раз. Если не помогло, сгенерируйте новый токен командой <code>/token</code> в BotFather."},
+    {t:"p",v:"Готово. Теперь бота можно выбрать как канал связи в настройках инструментов лидогенерации."}
+   ]},
+   {app:"b",badge:"Claude × Leeloo",h:"Установите скилы Leeloo",b:[
+    {t:"p",v:"Скил — это готовая методика агентства, записанная так, чтобы Claude выполнял её сам. Вы не пересказываете ему процесс каждый раз: он подхватывает нужный скил, как только вы описали задачу своими словами."},
+    {t:"p",v:"Скачайте оба файла и добавьте их в настройках Claude."},
+    {t:"p",v:"<a class='dl' href='"+SKILL_MARKETING+"' download>1 · Фундамент маркетинга <span class='ext'>.zip</span></a><a class='dl' href='"+SKILL_TUNNEL+"' download>2 · Конструктор туннелей <span class='ext'>.zip</span></a>"},
+    {t:"ol",v:[
+      "Нажмите обе кнопки выше — сохранятся два ZIP-архива. Распаковывать их не нужно.",
+      "В приложении Claude откройте <strong>Customize → Skills</strong>.",
+      "Нажмите <strong>Add</strong> и выберите первый архив — <strong>фундамент маркетинга</strong>.",
+      "Так же добавьте второй — конструктор туннелей.",
+      "Проверьте, что оба скила в списке включены.",
+      "Откройте <strong>новую сессию</strong> — скилы загружаются на старте сессии."
+    ]},
+    {t:"note",k:"info",nt:"Порядок не случайный",v:"Сначала <b>маркетинг</b>, потом <b>туннель</b>. Туннель собирается из фундамента маркетинга: сегментов, оферов, сквозного обещания. Если начать с туннеля, эти решения придётся выдумывать на ходу."},
+    {t:"note",k:"warn",nt:"Загружайте именно ZIP",v:"Claude ждёт архив, внутри которого лежит папка скила. Не распаковывайте его и не пытайтесь добавить отдельный файл — загрузка не пройдёт."},
+    {t:"sub",v:"Фундамент маркетинга"},
+    {t:"p",v:"Проводит бриф и собирает стратегию: нишу и поднишу, сегменты с болями, цепочку оферов с УТП, путь клиента, ТЗ на креативы Meta Ads и готовый HTML для ЛГТ. Останавливается после каждого этапа и ждёт вашего утверждения."},
+    {t:"code",label:"Как запустить",v:"Собери фундамент маркетинга для моего бизнеса"},
+    {t:"sub",v:"Конструктор туннелей"},
+    {t:"p",v:"Собирает туннель прямо в аккаунте: блоки, связи, кнопки, теги, кастомные поля, ЛГТ, оферы. Работает с реальными объектами, поэтому требует подключённого MCP из шага 2."},
+    {t:"code",label:"Как запустить",v:"Собери туннель продаж по фундаменту маркетинга. Сначала покажи план, ничего не меняй"},
+    {t:"note",k:"warn",nt:"Откройте новую сессию после установки",v:"Скилы, как и инструменты, загружаются на старте сессии. Та сессия, которая их установила, воспользоваться ими не может."}
+   ]}
+  ],
+  prompts:[
+   {tag:"audit",h:"Аудит аккаунта",why:"С этого стоит начинать: Claude покажет, что уже есть, и ничего не тронет.",
+    v:"Подключись к Leeloo и покажи текущее состояние аккаунта: список туннелей продаж, инструментов лидогенерации и подключённых ботов. Для каждого туннеля укажи количество подписчиков и дату последнего изменения. Ничего не меняй."},
+   {tag:"build",h:"Туннель с нуля",why:"Замените значения в квадратных скобках своими.",
+    v:"Собери туннель продаж для ниши [ниша] с оффером [что продаём] в Telegram.\nСтруктура:\n1. Приветствие с коротким объяснением, что человек получит.\n2. Блок «Запросить информацию»: имя и телефон, сохранить в карточку подписчика.\n3. Два сообщения прогрева с интервалом 1 день.\n4. Оффер с кнопкой оплаты.\n5. Ветка для тех, кто не ответил в течение 24 часов.\nСначала покажи план блоками. Ничего не создавай, пока я не подтвержу."},
+   {tag:"data",h:"Сбор данных в карточку клиента",why:"Блок «Запросить информацию» проверяет формат ответа и пишет его в кастомное поле.",
+    v:"Добавь в туннель [название туннеля] блок «Запросить информацию»: спросить город и сохранить ответ в кастомное поле city. Если подписчик не ответит в течение 2 часов — отправь одно напоминание. Покажи, куда именно в дереве туннеля встанет блок."},
+   {tag:"lgt",h:"ЛГТ и источники трафика",why:"Для каждого источника платформа генерирует отдельную ссылку со своей статистикой.",
+    v:"Создай инструмент лидогенерации типа «ссылка» для туннеля [название туннеля] и добавь три источника трафика: instagram_bio, telegram_channel, ads_meta. Дай мне готовые ссылки списком."},
+   {tag:"faq",h:"Умные ответы по ключам",why:"Умные ответы работают внутри туннеля, ЧаВо — в свободном чате вне его.",
+    v:"Настрой умные ответы в туннеле [название туннеля] на ключи «цена», «сколько стоит», «стоимость». Бот должен ответить текстом [ваш текст] и поставить подписчику тег price_asked."},
+   {tag:"alert",h:"Уведомление менеджеру",why:"Блок «Действие» умеет слать уведомления в Telegram в момент прохождения блока.",
+    v:"Добавь в туннель [название туннеля] блок «Действие»: когда подписчик доходит до блока с оффером, отправь уведомление в Telegram менеджеру. В уведомлении — имя, телефон и источник трафика подписчика."},
+   {tag:"sender",h:"Умная рассылка по сегменту",why:"Сначала сегмент и его размер, только потом текст.",
+    v:"Подбери подписчиков, которые подписались за последние 14 дней, дошли до блока с оффером, но не оплатили. Покажи, сколько их. Затем составь текст умной рассылки с напоминанием и дедлайном 48 часов. Не отправляй, пока я не подтвержу."},
+   {tag:"unit",h:"Юнит-экономика туннеля",why:"Расходы вносятся вручную в разделе «Расходы», остальное считается из «Отчётов».",
+    v:"Посчитай по туннелю [название туннеля] за прошлый месяц: расходы, количество подписчиков, продажи, CAC, LTV и ROI. Расходы возьми из раздела «Расходы», остальное — из «Отчётов». Скажи, на каком этапе самая большая просадка и почему."}
+  ]
+},
+
+en:{
+  name:"EN",
+  eyebrow:"Integration",
+  title:['Leeloo.AI ','in Claude'],
+  lead:"Connect your Leeloo account to Claude and build sales tunnels, lead gen tools and bots in plain language — without opening the builder.",
+  chips:["4 steps","≈15 minutes","Windows 10+ / macOS 11+"],
+  railTitle:"Steps",
+  rail:["Claude Desktop","Connect Leeloo","Telegram bot","Skills"],
+  copy:"Copy", copied:"Copied",
+  foot:"Claude shows a plan before it changes anything. Review it — especially on live tunnels.",
+  steps:[
+   {app:"c",badge:"In Claude",h:"Install Claude Desktop",b:[
+    {t:"p",v:"Claude Desktop is the app the integration runs in. Installation takes a few minutes and needs no separate licence."},
+    {t:"ol",v:[
+      "Open <a href='https://claude.ai/download' target='_blank' rel='noopener'>claude.ai/download</a> and get the build for your system.",
+      "<strong>Windows:</strong> Windows 10 or later. For the full feature set, run the installer with administrator rights and enable the <code>Virtual Machine Platform</code> component.",
+      "<strong>macOS:</strong> macOS 11 Big Sur or later. The Universal build runs on both Intel and Apple Silicon.",
+      "Launch Claude and sign in to your account.",
+      "Open the <strong>Code</strong> tab — that is where the next step runs."
+    ]},
+    {t:"note",k:"info",nt:"Company account",v:"If you sign in with a company account (Team or Enterprise), some settings may be locked by your administrator. That matters on the next step."}
+   ]},
+   {app:"c",badge:"In Claude",h:"Connect Leeloo with one prompt",b:[
+    {t:"p",v:"MCP is the protocol Claude uses to see your platform: tunnels, lead gen tools, subscribers, bots. You connect once and it works in every conversation after that."},
+    {t:"note",k:"warn",nt:"Have your Leeloo email and password ready",v:"Your browser will open a <b>“Sign in to Leeloo MCP”</b> form asking for your email and password. This is a separate sign-in for MCP — being logged in on the Leeloo website does not skip it. The window lasts about two minutes, so have the password to hand <b>before</b> you paste the prompt."},
+    {t:"code",label:"Paste as your first message in Claude Code",v:GOAL_PROMPT},
+    {t:"ol",v:[
+      "Claude opens the setup page and adds the Leeloo MCP server.",
+      "It shows you the authorization link and opens your browser.",
+      "You sign in to Leeloo and click <strong>Authorize</strong> — the only manual step.",
+      "Claude waits for the line <code>Authenticated with \"leeloo\"</code> and confirms the result.",
+      "Open a <strong>new session</strong> — Leeloo's tools load when a session starts."
+    ]},
+    {t:"note",k:"warn",nt:"Claude Code on your own machine",v:"The <strong>Code</strong> tab in the Claude app, the <code>claude</code> command in your terminal, or the IDE extension. It <b>will not work</b> in the ordinary chat at claude.ai (no terminal) or in Claude Code on the web and other cloud sessions: there the tool set is fixed at session start and the authorization window does not open in your browser. In a cloud environment, Leeloo is added in that environment's own configuration, not from here."},
+    {t:"note",k:"info",nt:"No admin rights needed",v:"This route does not depend on workspace settings — the server is written to your personal config. Even if your company account blocks adding connectors, the prompt still works."},
+    {t:"p",v:"If anything goes wrong, Claude checks the same page itself — it covers the common failures: <a href='"+SETUP_URL+"' target='_blank' rel='noopener'>setup instructions</a>."}
+   ]},
+   {app:"l",badge:"In Leeloo.AI",h:"Connect a Telegram bot",b:[
+    {t:"p",v:"The bot is the channel your tunnel talks to subscribers through. Create it in Telegram first, then hand the token to the platform."},
+    {t:"sub",v:"In Telegram"},
+    {t:"ol",v:[
+      "Open <a href='https://t.me/botfather' target='_blank' rel='noopener'>t.me/botfather</a> and press <strong>Start</strong>.",
+      "Send the <code>/newbot</code> command.",
+      "Give the bot a <strong>name</strong> — any language, changeable later.",
+      "Give it a <strong>username</strong>: Latin letters, digits and underscores only, at least 5 characters, and it must end in <code>bot</code>. The username cannot be changed afterwards.",
+      "Copy the <strong>token</strong> BotFather sends back."
+    ]},
+    {t:"note",k:"warn",nt:"The token is the key to your bot",v:"Don't publish it or forward it into group chats. If a token leaks, generate a new one with <code>/token</code> in BotFather."},
+    {t:"sub",v:"In Leeloo.AI"},
+    {t:"ol",v:[
+      "Go to <strong>Settings → Integrations → Messengers</strong>.",
+      "Click <strong>Add new connection</strong>.",
+      "Pick <strong>Telegram</strong>.",
+      "Paste the token and click <strong>Connect</strong>."
+    ]},
+    {t:"note",k:"info",nt:"“This token is invalid” error",v:"The usual cause is a space before or after the token. Remove it and paste again. If that doesn't help, generate a fresh token with <code>/token</code> in BotFather."},
+    {t:"p",v:"Done. The bot can now be picked as a channel in your lead gen tool settings."}
+   ]},
+   {app:"b",badge:"Claude × Leeloo",h:"Install the Leeloo skills",b:[
+    {t:"p",v:"A skill is the agency's method written so Claude can run it himself. You don't walk him through the process every time — he picks up the right skill as soon as you describe the job in your own words."},
+    {t:"p",v:"Download both files and add them in Claude's settings."},
+    {t:"p",v:"<a class='dl' href='"+SKILL_MARKETING+"' download>1 · Marketing foundation <span class='ext'>.zip</span></a><a class='dl' href='"+SKILL_TUNNEL+"' download>2 · Tunnel builder <span class='ext'>.zip</span></a>"},
+    {t:"ol",v:[
+      "Click both buttons above — you get two ZIP archives. Do not unzip them.",
+      "In the Claude app, open <strong>Customize → Skills</strong>.",
+      "Click <strong>Add</strong> and pick the first archive — the <strong>marketing foundation</strong>.",
+      "Add the second one the same way — the tunnel builder.",
+      "Check that both skills are switched on in the list.",
+      "Open a <strong>new session</strong> — skills load when a session starts."
+    ]},
+    {t:"note",k:"info",nt:"The order matters",v:"<b>Marketing</b> first, <b>tunnel</b> second. The tunnel is built from the marketing foundation — segments, offers, the single promise. Start with the tunnel and those decisions have to be invented on the spot."},
+    {t:"note",k:"warn",nt:"Upload the ZIP itself",v:"Claude expects an archive with the skill folder inside it. Don't unzip it and don't try to add a loose file — the upload will fail."},
+    {t:"sub",v:"Marketing foundation"},
+    {t:"p",v:"Runs the brief and builds the strategy: niche and sub-niche, segments with their pains, the offer chain with USPs, the customer journey, Meta Ads creative briefs and ready HTML for the lead gen tool. It stops after each stage and waits for your approval."},
+    {t:"code",label:"How to start it",v:"Build the marketing foundation for my business"},
+    {t:"sub",v:"Tunnel builder"},
+    {t:"p",v:"Builds the tunnel directly in your account: blocks, relations, buttons, tags, custom fields, lead gen tools, offers. It works on real objects, so it needs the MCP connection from step 2."},
+    {t:"code",label:"How to start it",v:"Build a sales tunnel from the marketing foundation. Show me the plan first, change nothing"},
+    {t:"note",k:"warn",nt:"Open a new session after installing",v:"Skills load at session start, just like tools. The session that installed them cannot use them."}
+   ]}
+  ],
+  prompts:[
+   {tag:"audit",h:"Account audit",why:"A good first run: Claude reports what exists and touches nothing.",
+    v:"Connect to Leeloo and show the current state of the account: all sales tunnels, lead gen tools and connected bots. For each tunnel give the subscriber count and the date it was last changed. Change nothing."},
+   {tag:"build",h:"Tunnel from scratch",why:"Replace the bracketed values with your own.",
+    v:"Build a sales tunnel for [niche] with the offer [what we sell] on Telegram.\nStructure:\n1. Welcome message explaining what the person gets.\n2. An “Ask information” block: name and phone, saved to the subscriber card.\n3. Two warm-up messages, one day apart.\n4. The offer with a payment button.\n5. A branch for people who don't reply within 24 hours.\nShow me the block plan first. Create nothing until I confirm."},
+   {tag:"data",h:"Collect data into the subscriber card",why:"The “Ask information” block validates the answer format and writes it to a custom field.",
+    v:"Add an “Ask information” block to the [tunnel name] tunnel: ask for the city and save the answer to the custom field city. If the subscriber doesn't reply within 2 hours, send one reminder. Show me where the block will sit in the tunnel tree."},
+   {tag:"lgt",h:"Lead gen tool and traffic sources",why:"Each source gets its own link and its own statistics.",
+    v:"Create a link-type lead gen tool for the [tunnel name] tunnel and add three traffic sources: instagram_bio, telegram_channel, ads_meta. Give me the finished links as a list."},
+   {tag:"faq",h:"Smart replies on keywords",why:"Smart replies work inside a tunnel; FAQ answers work in free chat outside it.",
+    v:"Set up smart replies in the [tunnel name] tunnel for the keywords “price”, “how much”, “cost”. The bot should answer with [your text] and tag the subscriber price_asked."},
+   {tag:"alert",h:"Notify the manager",why:"The “Action” block can send a Telegram notification the moment a block is reached.",
+    v:"Add an “Action” block to the [tunnel name] tunnel: when a subscriber reaches the offer block, send a Telegram notification to the manager containing the subscriber's name, phone and traffic source."},
+   {tag:"sender",h:"Smart sender to a segment",why:"Segment and size first, copy second.",
+    v:"Find subscribers who joined in the last 14 days, reached the offer block, but did not pay. Tell me how many there are. Then draft a smart sender message with a reminder and a 48-hour deadline. Don't send it until I confirm."},
+   {tag:"unit",h:"Tunnel unit economics",why:"Spend is entered by hand in Expenses; everything else comes from Reports.",
+    v:"For the [tunnel name] tunnel last month, calculate: spend, subscriber count, sales, CAC, LTV and ROI. Take spend from the Expenses section and the rest from Reports. Tell me which stage drops off hardest and why."}
+  ]
+}
+};
+
+/* ---------------- render ---------------- */
+const $ = s => document.querySelector(s);
+let lang = "ua";
+try{ const s = localStorage.getItem("lc-lang"); if(s && DATA[s]) lang = s; }catch(e){}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function codeBlock(label, value, L){
+  return `<div class="cb"><div class="cb-hd"><span class="cb-label">${esc(label)}</span>
+    <button class="copy" type="button" data-copy="${esc(value)}">${esc(L.copy)}</button></div>
+    <pre>${esc(value)}</pre></div>`;
+}
+
+function renderBlocks(blocks, L){
+  let out = "";
+  for(const b of blocks){
+    if(b.t==="p") out += `<p>${b.v}</p>`;
+    else if(b.t==="sub") out += `<h3 class="sub">${esc(b.v)}</h3>`;
+    else if(b.t==="ol") out += `<ol class="steplist">${b.v.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+    else if(b.t==="code") out += codeBlock(b.label, b.v, L);
+    else if(b.t==="note") out += `<div class="note ${b.k}"><span class="ic">${b.k==="warn"?"!":"i"}</span>
+        <div><p class="nt">${b.nt}</p><p>${b.v}</p></div></div>`;
+    else if(b.t==="rules") out += `<ul class="rules">${b.v.map(([k,t])=>`<li><span class="k">${esc(k)}</span><span>${t}</span></li>`).join("")}</ul>`;
+    else if(b.t==="prompts") out += `<div class="prompts">${L.prompts.map(p=>`
+        <details class="pc">
+          <summary><span class="tag">${esc(p.tag)}</span><span>${esc(p.h)}</span><span class="chev">›</span></summary>
+          <div class="pbody">${codeBlock("prompt", p.v, L)}<p class="why">${esc(p.why)}</p></div>
+        </details>`).join("")}</div>`;
+  }
+  return out;
+}
+
+function render(){
+  const L = DATA[lang];
+  document.documentElement.lang = lang;
+
+  $("#langs").innerHTML = Object.keys(DATA).map(k =>
+    `<button type="button" data-lang="${k}" aria-pressed="${k===lang}">${DATA[k].name}</button>`).join("");
+
+  $("#hEyebrow").textContent = L.eyebrow;
+  $("#hTitle").innerHTML = `${esc(L.title[0])}<span class="accent">${esc(L.title[1])}</span>`;
+  $("#hLead").textContent = L.lead;
+  $("#hChips").innerHTML = L.chips.map(c=>`<span class="chip">${esc(c)}</span>`).join("");
+
+  $("#railTitle").textContent = L.railTitle;
+  $("#rail").innerHTML = L.rail.map((r,i)=>
+    `<li><a href="#step-${i+1}" class="${L.steps[i].app}" data-i="${i+1}"><span class="n">0${i+1}</span><span>${esc(r)}</span></a></li>`).join("");
+
+  $("#steps").innerHTML = L.steps.map((s,i)=>`
+    <section class="step ${s.app}" id="step-${i+1}">
+      <div class="stripe"></div>
+      <div class="step-hd">
+        <span class="numeral">0${i+1}</span>
+        <div>
+          <h2>${esc(s.h)}</h2>
+          <span class="badge ${s.app==="b"?"c":s.app}">${esc(s.badge)}</span>
+        </div>
+      </div>
+      <div class="step-body">${renderBlocks(s.b, L)}</div>
+    </section>`).join("");
+
+  $("#footNote").textContent = L.foot;
+  spy();
+}
+
+/* copy */
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-copy]");
+  if(b){
+    const txt = b.getAttribute("data-copy");
+    const done = ()=>{ const o=b.textContent; b.textContent=DATA[lang].copied; b.classList.add("done");
+      setTimeout(()=>{b.textContent=o;b.classList.remove("done");},1600); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>fallback(txt,done)); }
+    else fallback(txt,done);
+    return;
+  }
+  const l = e.target.closest("[data-lang]");
+  if(l){ lang = l.getAttribute("data-lang"); try{localStorage.setItem("lc-lang",lang);}catch(err){} render(); }
+});
+function fallback(txt,cb){
+  const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); cb(); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* scroll spy */
+let obs;
+function spy(){
+  if(obs) obs.disconnect();
+  const links = [...document.querySelectorAll("#rail a")];
+  obs = new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const id = en.target.id.split("-")[1];
+        links.forEach(a=>a.classList.toggle("on", a.dataset.i===id));
+      }
+    });
+  }, {rootMargin:"-84px 0px -60% 0px", threshold:0});
+  document.querySelectorAll(".step").forEach(s=>obs.observe(s));
+}
+
+render();
+</script>
